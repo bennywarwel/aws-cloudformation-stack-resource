@@ -118,10 +118,10 @@ The docker image is built via maven and the google jib plugin. The staticly link
 https://www.graalvm.org/reference-manual/native-image/StaticImages/
 
 `dockerized build`
-# git clone git@github.com:eroad/aws-cloudformation-stack-resource.git
-# cd aws-cloudformation-stack-resource/build
-# docker build . -t graalvm-musl-maven
-# docker run -it --rm --name my-maven-project -v "$HOME/.m2":/root/.m2 -v "$(pwd)":/usr/src/mymaven -w /usr/src/mymaven graalvm-musl-maven:latest mvn install
+    # git clone git@github.com:eroad/aws-cloudformation-stack-resource.git
+    # cd aws-cloudformation-stack-resource/build
+    # docker build . -t graalvm-musl-maven
+    # docker run -it --rm --name my-maven-project -v "$HOME/.m2":/root/.m2 -v "$(pwd)":/usr/src/mymaven -w /usr/src/mymaven graalvm-musl-maven:latest mvn install
 
 The docker image is located in `target/jib-image.tar` and can be loaded via `docker load -i jib-image.tar`
 
