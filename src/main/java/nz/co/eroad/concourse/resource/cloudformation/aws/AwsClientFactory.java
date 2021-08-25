@@ -1,6 +1,7 @@
 package nz.co.eroad.concourse.resource.cloudformation.aws;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.core.retry.RetryMode;
@@ -16,7 +17,7 @@ public class AwsClientFactory {
       .build();
 
 
-  public static CloudFormationClient cloudFormationClient(Region region, AwsBasicCredentials awsBasicCredentials) {
+  public static CloudFormationClient cloudFormationClient(Region region, AwsCredentials awsBasicCredentials) {
     return CloudFormationClient.builder()
         .overrideConfiguration(unlimitedRetry)
         .credentialsProvider(awsBasicCredentials == null ? null : StaticCredentialsProvider.create(awsBasicCredentials))
@@ -25,7 +26,7 @@ public class AwsClientFactory {
         .build();
   }
 
-  public static S3Client s3Client(Region region, AwsBasicCredentials awsBasicCredentials) {
+  public static S3Client s3Client(Region region, AwsCredentials awsBasicCredentials) {
     return S3Client.builder()
         .overrideConfiguration(unlimitedRetry)
         .credentialsProvider(awsBasicCredentials == null ? null : StaticCredentialsProvider.create(awsBasicCredentials))

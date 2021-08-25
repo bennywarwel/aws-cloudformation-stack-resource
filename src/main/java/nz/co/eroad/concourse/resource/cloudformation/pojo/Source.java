@@ -3,6 +3,8 @@ package nz.co.eroad.concourse.resource.cloudformation.pojo;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -21,7 +23,7 @@ public class Source {
 
     private final String name;
     private final Region region;
-    private AwsBasicCredentials credentials;
+    private AwsCredentials credentials;
     private final List<String> notificationArns;
 
     @JsonCreator
@@ -63,9 +65,10 @@ public class Source {
                     assumeRoleCredential.secretAccessKey());
 
             //Quick and dirty solution, just override the credential
-            this.credentials = AwsBasicCredentials.create(
+            this.credentials = AwsSessionCredentials.create(
                     assumeRoleCredential.accessKeyId(),
-                    assumeRoleCredential.secretAccessKey());
+                    assumeRoleCredential.secretAccessKey(),
+                    assumeRoleCredential.sessionToken());
         }
 
         this.notificationArns = notificationArns == null ? Collections.emptyList() : notificationArns;
@@ -79,7 +82,7 @@ public class Source {
         return region;
     }
 
-    public AwsBasicCredentials getCredentials() {
+    public AwsCredentials getCredentials() {
         return credentials;
     }
 
