@@ -2,20 +2,19 @@ package nz.co.eroad.concourse.resource.cloudformation.pojo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.time.Instant;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.awscore.client.builder.AwsClientBuilder;
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sts.StsClient;
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
 import software.amazon.awssdk.services.sts.model.Credentials;
 import software.amazon.awssdk.utils.StringUtils;
+
+import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 
 public class Source {
@@ -55,7 +54,8 @@ public class Source {
                     .roleSessionName(String.format("%s-%s", assumeRoleArn, Instant.now()))
                     .build();
 
-            StsClient sts = StsClient.builder().credentialsProvider(StaticCredentialsProvider.create(credentials)).build();
+            StsClient sts = StsClient.builder().credentialsProvider(StaticCredentialsProvider.create(credentials))
+                    .httpClientBuilder(UrlConnectionHttpClient.builder()).build();
             Credentials assumeRoleCredential = sts.assumeRole(assumeRoleRequest).credentials();
 
             System.out.printf("Assume role credential is %s, %s",
