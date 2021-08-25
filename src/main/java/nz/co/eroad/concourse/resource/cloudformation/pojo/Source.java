@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -46,17 +48,25 @@ public class Source {
             this.credentials = null;
         }
 
-        if (credentials != null && !StringUtils.isEmpty(assumeRoleArn)) {
-            System.out.printf("Config credential is %s, %s", credentials.accessKeyId(), credentials.secretAccessKey());
+        AwsCredentialsProvider provider;
+        if (credentials == null) {
+            provider = DefaultCredentialsProvider.builder().build();
+        } else {
+            System.out.println("AWS secret is configured, hence create static chain out of it");
+            provider = StaticCredentialsProvider.create(credentials);
+        }
+
+        if (!StringUtils.isEmpty(assumeRoleArn)) {
+
             System.out.printf("assume role is %s", assumeRoleArn);
 
             AssumeRoleRequest assumeRoleRequest = AssumeRoleRequest.builder()
-                    .durationSeconds(12 * 60 * 60) // 12 hours
+                    .durationSeconds(60 * 60) // 1 hour
                     .roleArn(assumeRoleArn)
-                    .roleSessionName(String.format("%s-%s", assumeRoleArn, Instant.now()))
+                    .roleSessionName("ConcourseAssumeRoleSession")
                     .build();
 
-            StsClient sts = StsClient.builder().credentialsProvider(StaticCredentialsProvider.create(credentials))
+            StsClient sts = StsClient.builder().credentialsProvider(provider)
                     .httpClientBuilder(UrlConnectionHttpClient.builder()).build();
             Credentials assumeRoleCredential = sts.assumeRole(assumeRoleRequest).credentials();
 
