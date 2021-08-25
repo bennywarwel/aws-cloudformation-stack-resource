@@ -109,3 +109,19 @@ The following example uses a repository to store configuration and, whenever the
             file: "acme-config/vpc/post-update-hooks.yml"
 
 Another example is the [main](./ci/pipelines/main.yml) pipeline which creates/updates/deletes a stack as part of some lightweight tests.
+
+
+### Docker Image build
+
+The docker image is built via maven and the google jib plugin. The staticly linked main binary is built using GraalVM. 
+
+https://www.graalvm.org/reference-manual/native-image/StaticImages/
+
+`dockerized build`
+# git clone git@github.com:eroad/aws-cloudformation-stack-resource.git
+# cd aws-cloudformation-stack-resource/build
+# docker build . -t graalvm-musl-maven
+# docker run -it --rm --name my-maven-project -v "$HOME/.m2":/root/.m2 -v "$(pwd)":/usr/src/mymaven -w /usr/src/mymaven graalvm-musl-maven:latest mvn install
+
+The docker image is located in `target/jib-image.tar` and can be loaded via `docker load -i jib-image.tar`
+
