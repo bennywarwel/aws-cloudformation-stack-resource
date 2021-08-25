@@ -46,6 +46,9 @@ public class Source {
         }
 
         if (credentials != null && !StringUtils.isEmpty(assumeRoleArn)) {
+            System.out.printf("Config credential is %s, %s", credentials.accessKeyId(), credentials.secretAccessKey());
+            System.out.printf("assume role is %s", assumeRoleArn);
+
             AssumeRoleRequest assumeRoleRequest = AssumeRoleRequest.builder()
                     .durationSeconds(12 * 60 * 60) // 12 hours
                     .roleArn(assumeRoleArn)
@@ -54,6 +57,10 @@ public class Source {
 
             StsClient sts = StsClient.builder().credentialsProvider(StaticCredentialsProvider.create(credentials)).build();
             Credentials assumeRoleCredential = sts.assumeRole(assumeRoleRequest).credentials();
+
+            System.out.printf("Assume role credential is %s, %s",
+                    assumeRoleCredential.accessKeyId(),
+                    assumeRoleCredential.secretAccessKey());
 
             //Quick and dirty solution, just override the credential
             this.credentials = AwsBasicCredentials.create(
