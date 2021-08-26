@@ -52,13 +52,13 @@ public class Source {
         if (credentials == null) {
             provider = DefaultCredentialsProvider.builder().build();
         } else {
-            System.out.println("AWS secret is configured, hence create static chain out of it");
+            System.err.println("AWS secret is configured, hence create static chain out of it");
             provider = StaticCredentialsProvider.create(credentials);
         }
 
         if (!StringUtils.isEmpty(assumeRoleArn)) {
 
-            System.out.printf("assume role is %s", assumeRoleArn);
+            System.err.printf("\nAssumed IAM role: %s\n\n", assumeRoleArn);
 
             AssumeRoleRequest assumeRoleRequest = AssumeRoleRequest.builder()
                     .durationSeconds(60 * 60) // 1 hour
@@ -69,10 +69,6 @@ public class Source {
             StsClient sts = StsClient.builder().credentialsProvider(provider)
                     .httpClientBuilder(UrlConnectionHttpClient.builder()).build();
             Credentials assumeRoleCredential = sts.assumeRole(assumeRoleRequest).credentials();
-
-            System.out.printf("Assume role credential is %s, %s",
-                    assumeRoleCredential.accessKeyId(),
-                    assumeRoleCredential.secretAccessKey());
 
             //Quick and dirty solution, just override the credential
             this.credentials = AwsSessionCredentials.create(
