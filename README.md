@@ -9,6 +9,7 @@ A [Concourse](http://concourse.ci) resource to manage your [AWS CloudFormation](
  * `access_key` - AWS access key (if not using EC2 IAM profile)
  * `secret_key` - AWS secret key (if not using EC2 IAM profile)
  * `region` - the region to manage the stack (default `us-east-1`)
+ * `sts-role-arn` - the iam role to assume when deploying the stack
 
 
 ## Behavior
@@ -123,6 +124,8 @@ https://www.graalvm.org/reference-manual/native-image/StaticImages/
       # cd aws-cloudformation-stack-resource/build
       # docker build . -t graalvm-musl-maven
       # docker run -it --rm --name my-maven-project -v "$HOME/.m2":/root/.m2 -v "$(pwd)":/usr/src/mymaven -w /usr/src/mymaven graalvm-musl-maven:latest mvn install
+      # docker load -i target/jib-image.tar
+      # docker tag aws-cloudformation-stack-resource:1.0.0-SNAPSHOT 212136148154.dkr.ecr.ap-southeast-2.amazonaws.com/ci/aws-cloudformation-stack-resource-sts:${NEW_VERSION}
+      # docker push 212136148154.dkr.ecr.ap-southeast-2.amazonaws.com/ci/aws-cloudformation-stack-resource:${NEW_VERSION}
 
-The docker image is located in `target/jib-image.tar` and can be loaded via `docker load -i jib-image.tar`
-
+Concourse tasks use the latest version of the container.
