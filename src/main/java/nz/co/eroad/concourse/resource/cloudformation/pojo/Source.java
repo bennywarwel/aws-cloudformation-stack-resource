@@ -58,8 +58,6 @@ public class Source {
 
         if (!StringUtils.isEmpty(assumeRoleArn)) {
 
-            System.err.printf("\nAssumed IAM role: %s\n\n", assumeRoleArn);
-
             AssumeRoleRequest assumeRoleRequest = AssumeRoleRequest.builder()
                     .durationSeconds(60 * 60) // 1 hour
                     .roleArn(assumeRoleArn)
@@ -75,7 +73,9 @@ public class Source {
                     assumeRoleCredential.accessKeyId(),
                     assumeRoleCredential.secretAccessKey(),
                     assumeRoleCredential.sessionToken());
-        }
+        } else {
+	  throw new IllegalArgumentException("Role ARN must be specified!");
+	}
 
         this.notificationArns = notificationArns == null ? Collections.emptyList() : notificationArns;
     }
